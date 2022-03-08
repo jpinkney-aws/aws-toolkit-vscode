@@ -13,7 +13,12 @@ import { ChildProcess } from '../../shared/utilities/childProcess'
 import { EcsContainerNode } from '../explorer/ecsContainerNode'
 import { recordEcsRunExecuteCommand } from '../../shared/telemetry/telemetry.gen'
 import { DefaultSettingsConfiguration, SettingsConfiguration } from '../../shared/settingsConfiguration'
-import { ecsRequiredPermissionsUrl, extensionSettingsPrefix, INSIGHTS_TIMESTAMP_FORMAT } from '../../shared/constants'
+import {
+    ecsRequiredIamPermissionsUrl,
+    ecsRequiredTaskPermissionsUrl,
+    extensionSettingsPrefix,
+    INSIGHTS_TIMESTAMP_FORMAT,
+} from '../../shared/constants'
 import { showOutputMessage, showViewLogsMessage } from '../../shared/utilities/messages'
 import { getOrInstallCli } from '../../shared/utilities/cliUtils'
 import { removeAnsi } from '../../shared/utilities/textUtilities'
@@ -71,7 +76,7 @@ export async function runCommandInContainer(
                 )
                 .then(selection => {
                     if (selection === viewDocsItem) {
-                        vscode.env.openExternal(vscode.Uri.parse(ecsRequiredPermissionsUrl))
+                        vscode.env.openExternal(vscode.Uri.parse(ecsRequiredTaskPermissionsUrl))
                     }
                 })
             result = 'Failed'
@@ -109,14 +114,29 @@ export async function runCommandInContainer(
         })
 
         result = 'Succeeded'
-    } catch (error) {
-        if (CancellationError.isUserCancelled(error)) {
+    } catch (err) {
+        const error = err as Error
+        if (CancellationError.isUserCancelled(err)) {
             return
         }
 
         result = 'Failed'
-        getLogger().error('ecs: Failed to execute command in container, %O', error)
-        showViewLogsMessage(localize('AWS.ecs.runCommandInContainer.error', 'Failed to execute command in container.'))
+        const failedMessage = localize('AWS.ecs.runCommandInContainer.error', 'Failed to execute command in container.')
+        const missingPermissions = localize(
+            'AWS.ecs.runCommandInContainer.missingPermissions',
+            'Execute Command not allowed. See documentation for required permissions.'
+        )
+        const viewDocs = localize('AWS.generic.viewDocs', 'View Documentation')
+        getLogger().error('ecs: Failed to execute command in container, %O', err)
+        if (error.name === 'AccessDeniedException') {
+            showViewLogsMessage(missingPermissions, window, 'error', [viewDocs]).then(selection => {
+                if (selection === viewDocs) {
+                    vscode.env.openExternal(vscode.Uri.parse(ecsRequiredIamPermissionsUrl))
+                }
+            })
+        } else {
+            showViewLogsMessage(failedMessage)
+        }
     } finally {
         recordEcsRunExecuteCommand({ result: result, ecsExecuteCommandType: 'command' })
         status?.dispose()
