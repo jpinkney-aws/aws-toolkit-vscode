@@ -26,6 +26,7 @@ import globals from '../../shared/extensionGlobals'
 import { CommandWizard } from '../wizards/executeCommand'
 import { CancellationError } from '../../shared/utilities/timeoutUtils'
 import { isCloud9 } from '../../shared/extensionUtilities'
+import { viewDocs } from '../../shared/localizedText'
 
 // Required SSM permissions for the task IAM role, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html#ecs-exec-enabling-and-using
 const REQUIRED_SSM_PERMISSIONS = [
@@ -124,9 +125,8 @@ export async function runCommandInContainer(
         const failedMessage = localize('AWS.ecs.runCommandInContainer.error', 'Failed to execute command in container.')
         const missingPermissions = localize(
             'AWS.ecs.runCommandInContainer.missingPermissions',
-            'Execute Command not allowed. See documentation for required permissions.'
+            `Insufficient user role permissions for "Execute Command". See documentation for required permissions.`
         )
-        const viewDocs = localize('AWS.generic.viewDocs', 'View Documentation')
         getLogger().error('ecs: Failed to execute command in container, %O', err)
         if (error.name === 'AccessDeniedException') {
             showViewLogsMessage(missingPermissions, window, 'error', [viewDocs]).then(selection => {
