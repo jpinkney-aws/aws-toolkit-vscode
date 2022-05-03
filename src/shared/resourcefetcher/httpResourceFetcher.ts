@@ -9,7 +9,7 @@ import * as https from 'https'
 import * as stream from 'stream'
 import got, { Response, RequestError, CancelError } from 'got'
 import urlToOptions from 'got/dist/source/core/utils/url-to-options'
-import Request from 'got/dist/source/core'
+import Request, { HTTPError } from 'got/dist/source/core'
 import { VSCODE_EXTENSION_ID } from '../extensions'
 import { getLogger, Logger } from '../logger'
 import { ResourceFetcher } from './resourcefetcher'
@@ -91,8 +91,11 @@ export class HttpResourceFetcher implements ResourceFetcher {
 
             return contents
         } catch (err) {
-            const error = err as CancelError | { message?: string; code?: number }
-            this.logger.verbose(`Error downloading ${this.logText()}: %s`, error.message ?? error.code)
+            const error = err as CancelError | HTTPError
+            this.logger.verbose(
+                `Error downloading ${this.logText()}: %s`,
+                error.message ?? error.code ?? error.response.statusMessage ?? error.response.statusCode
+            )
 
             return undefined
         }
