@@ -16,6 +16,15 @@ import { TextDocument } from 'vscode-languageserver-textdocument'
 import { createConverter as p2cConverter } from 'vscode-languageclient/lib/protocolConverter'
 import { TextDocumentValidator } from '../languageServer/utils/validator'
 import { CloudFormation } from '../cloudformation/cloudformation'
+import {
+    DidChangeConfigurationNotification,
+    LanguageClient,
+    LanguageClientOptions,
+    ServerOptions,
+    TransportKind,
+} from 'vscode-languageclient'
+import path = require('path')
+import globals from '../extensionGlobals'
 
 // sourced from https://github.com/redhat-developer/vscode-yaml/blob/3d82d61ea63d3e3a9848fe6b432f8f1f452c1bec/src/schema-extension-api.ts
 // removed everything that is not currently being used
@@ -125,19 +134,83 @@ function configureLanguageService(languageService: LanguageService, schemaMap: M
     })
 }
 
+export async function activate() {
+    const toDispose = globals.context.subscriptions
+
+    // The server is implemented in node
+    const serverModule = globals.context.asAbsolutePath(path.join('dist/src/shared/extensions/', 'yamlServer.js'))
+    // The debug options for the server
+    // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
+    const debugOptions = { execArgv: ['--nolazy', '--inspect=6011'] }
+
+    // If the extension is launch in debug mode the debug server options are use
+    // Otherwise the run options are used
+    const serverOptions: ServerOptions = {
+        run: { module: serverModule, transport: TransportKind.ipc },
+        debug: { module: serverModule, transport: TransportKind.ipc, options: debugOptions },
+    }
+
+    const documentSelector = [{ language: 'yaml' }, { pattern: '*.y(a)ml' }]
+
+    // Options to control the language client
+    const clientOptions: LanguageClientOptions = {
+        // Register the server for json documents
+        documentSelector,
+        initializationOptions: {
+            handledSchemaProtocols: ['file', 'untitled'], // language server only loads file-URI. Fetching schemas with other protocols ('http'...) are made on the client.
+        },
+        synchronize: {},
+    }
+
+    // Create the language client and start the client.
+    const client = new LanguageClient('yaml', 'yaml', serverOptions, clientOptions)
+
+    const disposable = client.start()
+    toDispose.push(disposable)
+
+    await client.onReady()
+
+    return client
+}
+
+function onSettingsChanged(client: LanguageClient, schemaMap: Map<string, vscode.Uri>) {
+    const schemaSettings: SchemasSettings[] = []
+    for (const [filePath, schemaUri] of schemaMap) {
+        schemaSettings.push({
+            fileMatch: [filePath],
+            uri: 'file://' + encodeURI(schemaUri.fsPath), // the file system path is encoded because os x has a space in the path and markdown will fail
+        })
+    }
+
+    client.sendNotification(DidChangeConfigurationNotification.type, {
+        // eslint-disable-next-line no-null/no-null
+        settings: {
+            // eslint-disable-next-line no-null/no-null
+            aws: {
+                yaml: {
+                    schemas: schemaSettings,
+                },
+            },
+        },
+    })
+}
+
 export async function activateYamlExtension(): Promise<YamlExtension | undefined> {
     const schemaMap = new Map<string, vscode.Uri>()
 
-    if (isCloud9()) {
-        const languageService = await activateYAMLLanguageService()
+    if (!isCloud9()) {
+        // const languageService = await activateYAMLLanguageService()
+        const languageClient = await activate()
         return {
             assignSchema: async (path, schema) => {
                 schemaMap.set(path.toString(), evaluate(schema))
-                configureLanguageService(languageService, schemaMap)
+                onSettingsChanged(languageClient, schemaMap)
+                // configureLanguageService(languageService, schemaMap)
             },
             removeSchema: path => {
                 schemaMap.delete(path.toString())
-                configureLanguageService(languageService, schemaMap)
+                onSettingsChanged(languageClient, schemaMap)
+                // configureLanguageService(languageService, schemaMap)
             },
             getSchema: path => schemaMap.get(path.toString()),
         }

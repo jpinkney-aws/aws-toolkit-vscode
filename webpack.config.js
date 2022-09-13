@@ -26,6 +26,7 @@ const baseConfig = {
     entry: {
         'src/main': './src/main.ts',
         'src/stepFunctions/asl/aslServer': './src/stepFunctions/asl/aslServer.ts',
+        'src/shared/extensions/yamlServer': './src/shared/extensions/yamlServer.ts',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),

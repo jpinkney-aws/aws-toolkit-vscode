@@ -40,6 +40,14 @@
             "outFiles": ["${workspaceRoot}/dist/src/ssmDocument/ssm/ssmServer.js"]
         },
         {
+            "name": "Attach to YAML Server",
+            "type": "node",
+            "request": "attach",
+            "port": 6011,
+            "restart": true,
+            "outFiles": ["${workspaceRoot}/dist/src/shared/extensions/yamlServer.js"]
+        },
+        {
             "name": "Extension (webpack)",
             "type": "extensionHost",
             "request": "launch",
