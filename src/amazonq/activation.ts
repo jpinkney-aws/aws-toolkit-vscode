@@ -18,7 +18,7 @@ import { activateBadge } from './util/viewBadgeHandler'
 import { telemetry } from '../shared/telemetry/telemetry'
 
 export async function activate(context: ExtensionContext) {
-    const appInitContext = new DefaultAmazonQAppInitContext()
+    const appInitContext = DefaultAmazonQAppInitContext.instance
 
     registerApps(appInitContext)
 

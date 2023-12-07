@@ -21,6 +21,15 @@ export class DefaultAmazonQAppInitContext implements AmazonQAppInitContext {
     private readonly webViewToAppsMessagePublishers: Map<TabType, MessagePublisher<any>> = new Map()
     public readonly onDidChangeAmazonQVisibility = new EventEmitter<boolean>()
 
+    static #instance: DefaultAmazonQAppInitContext
+
+    /**
+     * A singleton scoped to the global configuration target and `null` resource.
+     */
+    public static get instance() {
+        return (this.#instance ??= new this())
+    }
+
     constructor() {}
 
     registerWebViewToAppMessagePublisher(messagePublisher: MessagePublisher<any>, tabType: TabType): void {
