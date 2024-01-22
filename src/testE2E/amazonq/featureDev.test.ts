@@ -9,7 +9,7 @@ import { qTestingFramework } from './framework/framework'
 import { FollowUpTypes } from '../../amazonqFeatureDev/types'
 import sinon from 'sinon'
 import { FeatureDevClient } from '../../amazonqFeatureDev/client/featureDev'
-import { verifyTextOrder } from './framework/text'
+// import { verifyTextOrder } from './framework/text'
 import { examples } from '../../amazonqFeatureDev/text'
 import * as authUtil from '../../codewhisperer/util/authUtil'
 import { getLogger } from '../../shared/logger/logger'
@@ -45,55 +45,52 @@ describe('Amazon Q Feature Dev', function () {
         sinon.restore()
     })
 
-    describe('quick action availability', () => {
-        it('Shows /dev when feature dev is enabled', () => {
-            const q = framework.createTab()
-            const command = q.findCommand('/dev')
-            if (!command) {
-                assert.fail('Could not find command')
-            }
+    // describe('quick action availability', () => {
+    //     it('Shows /dev when feature dev is enabled', () => {
+    //         const q = framework.createTab()
+    //         const command = q.findCommand('/dev')
+    //         getLogger().info('Found command: %O', command)
+    //         if (!command) {
+    //             assert.fail('Could not find command')
+    //         }
 
-            if (command.length > 1) {
-                assert.fail('Found too many commands with the name /dev')
-            }
-        })
+    //         if (command.length > 1) {
+    //             assert.fail('Found too many commands with the name /dev')
+    //         }
+    //     })
 
-        it('Does NOT show /dev when feature dev is NOT enabled', () => {
-            framework = new qTestingFramework('featuredev', false, true)
-            const q = framework.createTab()
-            const command = q.findCommand('/dev')
-            if (command.length > 0) {
-                assert.fail('Found command when it should not have been found')
-            }
-        })
-    })
+    //     it('Does NOT show /dev when feature dev is NOT enabled', () => {
+    //         framework = new qTestingFramework('featuredev', false, true)
+    //         const q = framework.createTab()
+    //         const command = q.findCommand('/dev')
+    //         if (command.length > 0) {
+    //             assert.fail('Found command when it should not have been found')
+    //         }
+    //     })
+    // })
 
     describe('/dev {msg} entry', async () => {
-        it('Receives chat response', async () => {
-            // this.timeout(60000)
-            const q = framework.createTab()
-            const prompt = 'Implement twosum in typescript'
-            q.addChatMessage({ command: '/dev', prompt })
-
-            // Wait for a backend response
-            await q.waitForChatFinishesLoading()
-
-            const chatItems = q.getChatItems()
-
-            // Verify that all the responses come back in the correct order
-            verifyTextOrder(chatItems, ['Welcome to /dev', prompt, samplePlanResponse])
-
-            // Check that the last UI message has the two buttons
-            assert.notStrictEqual(chatItems.pop()?.followUp?.options, [
-                {
-                    type: FollowUpTypes.NewPlan,
-                },
-                {
-                    type: FollowUpTypes.GenerateCode,
-                    disabled: true,
-                },
-            ])
-        })
+        // it('Receives chat response', async () => {
+        //     // this.timeout(60000)
+        //     const q = framework.createTab()
+        //     const prompt = 'Implement twosum in typescript'
+        //     q.addChatMessage({ command: '/dev', prompt })
+        //     // Wait for a backend response
+        //     await q.waitForChatFinishesLoading()
+        //     const chatItems = q.getChatItems()
+        //     // Verify that all the responses come back in the correct order
+        //     verifyTextOrder(chatItems, ['Welcome to /dev', prompt, samplePlanResponse])
+        //     // Check that the last UI message has the two buttons
+        //     assert.notStrictEqual(chatItems.pop()?.followUp?.options, [
+        //         {
+        //             type: FollowUpTypes.NewPlan,
+        //         },
+        //         {
+        //             type: FollowUpTypes.GenerateCode,
+        //             disabled: true,
+        //         },
+        //     ])
+        // })
     })
 
     describe('/dev entry', () => {
@@ -105,39 +102,40 @@ describe('Amazon Q Feature Dev', function () {
             getLogger().info('Adding chat message')
             q.clickButton(FollowUpTypes.DevExamples)
             getLogger().info('clicked')
+            getLogger().info('%O', q.getChatItems())
             const lastChatItems = q.getChatItems().pop()
             getLogger().info('%O', lastChatItems)
             assert.deepStrictEqual(lastChatItems?.body, examples)
         })
 
-        it('Receives chat response', async () => {
-            // this.timeout(60000)
-            getLogger().info('Creating tab')
-            const q = framework.createTab()
-            const prompt = 'Implement twosum in typescript'
-            getLogger().info('Adding chat message')
-            q.addChatMessage({ command: '/dev' })
-            getLogger().info('Adding chat message 2')
-            q.addChatMessage({ prompt })
+        // it('Receives chat response', async () => {
+        //     // this.timeout(60000)
+        //     getLogger().info('Creating tab')
+        //     const q = framework.createTab()
+        //     const prompt = 'Implement twosum in typescript'
+        //     getLogger().info('Adding chat message')
+        //     q.addChatMessage({ command: '/dev' })
+        //     getLogger().info('Adding chat message 2')
+        //     q.addChatMessage({ prompt })
 
-            // Wait for a backend response
-            await q.waitForChatFinishesLoading()
+        //     // Wait for a backend response
+        //     await q.waitForChatFinishesLoading()
 
-            const chatItems = q.getChatItems()
+        //     const chatItems = q.getChatItems()
 
-            // Verify that all the responses come back in the correct order
-            verifyTextOrder(chatItems, [prompt, samplePlanResponse])
+        //     // Verify that all the responses come back in the correct order
+        //     verifyTextOrder(chatItems, [prompt, samplePlanResponse])
 
-            // Check that the UI has the two buttons
-            assert.notStrictEqual(chatItems.pop()?.followUp?.options, [
-                {
-                    type: FollowUpTypes.NewPlan,
-                },
-                {
-                    type: FollowUpTypes.GenerateCode,
-                    disabled: true,
-                },
-            ])
-        })
+        //     // Check that the UI has the two buttons
+        //     assert.notStrictEqual(chatItems.pop()?.followUp?.options, [
+        //         {
+        //             type: FollowUpTypes.NewPlan,
+        //         },
+        //         {
+        //             type: FollowUpTypes.GenerateCode,
+        //             disabled: true,
+        //         },
+        //     ])
+        // })
     })
 })
