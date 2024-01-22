@@ -31,7 +31,7 @@ type SuiteName = 'integration' | 'e2e' | 'unit'
 export async function runToolkitTests(
     suite: SuiteName,
     relativeTestEntryPoint: string,
-    extraEnv: Record<string, string>
+    extraEnv?: Record<string, string>
 ) {
     try {
         console.log(`Running ${suite} test suite...`)
@@ -61,7 +61,7 @@ async function getVSCodeCliArgs(params: {
     vsCodeExecutablePath: string
     relativeTestEntryPoint: string
     suite: SuiteName
-    extraEnv: Record<string, string>
+    extraEnv?: Record<string, string>
 }): Promise<TestOptions> {
     const projectRootDir = process.cwd()
 
