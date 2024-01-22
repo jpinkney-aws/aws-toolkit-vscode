@@ -12,6 +12,7 @@ import { FeatureDevClient } from '../../amazonqFeatureDev/client/featureDev'
 import { verifyTextOrder } from './framework/text'
 import { examples } from '../../amazonqFeatureDev/text'
 import * as authUtil from '../../codewhisperer/util/authUtil'
+import { getLogger } from '../../shared/logger/logger'
 
 describe('Amazon Q Feature Dev', function () {
     let framework: qTestingFramework
@@ -69,7 +70,7 @@ describe('Amazon Q Feature Dev', function () {
 
     describe('/dev {msg} entry', async () => {
         it('Receives chat response', async () => {
-            this.timeout(60000)
+            // this.timeout(60000)
             const q = framework.createTab()
             const prompt = 'Implement twosum in typescript'
             q.addChatMessage({ command: '/dev', prompt })
@@ -97,19 +98,26 @@ describe('Amazon Q Feature Dev', function () {
 
     describe('/dev entry', () => {
         it('Clicks examples', async () => {
+            getLogger().info('Creating tab')
             const q = framework.createTab()
+            getLogger().info('Created tab')
             q.addChatMessage({ command: '/dev' })
+            getLogger().info('Adding chat message')
             q.clickButton(FollowUpTypes.DevExamples)
-
+            getLogger().info('clicked')
             const lastChatItems = q.getChatItems().pop()
+            getLogger().info('%O', lastChatItems)
             assert.deepStrictEqual(lastChatItems?.body, examples)
         })
 
         it('Receives chat response', async () => {
-            this.timeout(60000)
+            // this.timeout(60000)
+            getLogger().info('Creating tab')
             const q = framework.createTab()
             const prompt = 'Implement twosum in typescript'
+            getLogger().info('Adding chat message')
             q.addChatMessage({ command: '/dev' })
+            getLogger().info('Adding chat message 2')
             q.addChatMessage({ prompt })
 
             // Wait for a backend response

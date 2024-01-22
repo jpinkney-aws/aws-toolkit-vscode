@@ -145,6 +145,7 @@ export const createMynahUI = (ideApi: any, featureDevInitEnabled: boolean, gumby
             ideApi.postMessage(message)
         },
         onChatAnswerReceived: (tabID: string, item: ChatItem) => {
+            console.log('onChatAnswerReceived')
             if (item.type === ChatItemType.ANSWER_PART) {
                 mynahUI.updateLastChatAnswer(tabID, {
                     ...(item.messageId !== undefined ? { messageId: item.messageId } : {}),

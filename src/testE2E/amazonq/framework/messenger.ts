@@ -6,6 +6,7 @@
 import assert from 'assert'
 import { MynahUI, MynahUIProps, MynahUIDataModel } from '@aws/mynah-ui'
 import { waitUntil } from '../../../shared/utilities/timeoutUtils'
+import { getLogger } from '../../../shared/logger'
 
 export interface MessengerOptions {
     waitIntervalInMs?: number
@@ -50,6 +51,7 @@ export class Messenger {
         }
 
         const lastChatItem = this.getChatItems().pop()
+        getLogger().info('Trying to click: %O', lastChatItem)
         const option = lastChatItem?.followUp?.options?.filter(option => option.type === type)
         if (!option || option.length > 1) {
             assert.fail('Could not find follow up option')
@@ -75,6 +77,8 @@ export class Messenger {
 
     async waitForChatFinishesLoading() {
         const isFinishedLoading = (): boolean => {
+            getLogger().info('%O', this.getStore().chatItems)
+            getLogger().info('%O', this.getStore().loadingChat)
             return this.getStore().loadingChat === false
         }
 
