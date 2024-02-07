@@ -11,6 +11,7 @@ import { verifyTextOrder } from './framework/text'
 import { examples } from '../../amazonqFeatureDev/userFacingText'
 import { registerAuthHook, using } from '../../test/setupUtil'
 import { loginToIdC } from './utils/setup'
+import { getLogger } from '../../shared/logger'
 
 describe('Amazon Q Feature Dev', function () {
     let framework: qTestingFramework
@@ -63,10 +64,14 @@ describe('Amazon Q Feature Dev', function () {
             const prompt = 'Implement twosum in typescript'
             q.addChatMessage({ command: '/dev', prompt })
 
+            console.log('testing')
+            getLogger().info('testing')
             // Wait for a backend response
             await q.waitForChatFinishesLoading()
 
             const chatItems = q.getChatItems()
+            console.log(chatItems)
+            getLogger().info(chatItems.map(x => x.body).join('\n'))
 
             /**
              * Verify that all the responses come back in the correct order and that a response
@@ -105,10 +110,15 @@ describe('Amazon Q Feature Dev', function () {
             q.addChatMessage({ command: '/dev' })
             q.addChatMessage({ prompt })
 
+            console.log('testing')
+            getLogger().info('testing')
+
             // Wait for a backend response
             await q.waitForChatFinishesLoading()
 
             const chatItems = q.getChatItems()
+            console.log(chatItems)
+            getLogger().info(chatItems.map(x => x.body).join('\n'))
 
             /**
              * Verify that all the responses come back in the correct order and that a response
