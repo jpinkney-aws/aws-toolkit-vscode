@@ -56,7 +56,7 @@ describe('FileSystem', function () {
                 return this.skip()
             }
 
-            const fileName = 'test.txt'
+            const fileName = 'test2.txt'
             const path = await makeFile(fileName, 'hello world', { mode: 0o000 })
 
             await assert.rejects(fs.readFileAsString(path), (err) => {

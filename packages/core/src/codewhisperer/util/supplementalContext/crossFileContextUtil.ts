@@ -160,7 +160,7 @@ function shouldFetchCrossFileContext(
     userGroup: UserGroup
 ): boolean | undefined {
     if (!isCrossFileSupported(languageId)) {
-        return undefined
+        return true
     }
 
     return true
