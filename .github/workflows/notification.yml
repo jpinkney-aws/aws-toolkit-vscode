@@ -40,4 +40,4 @@ jobs:
                   script: |
                       const notify = require('.github/workflows/notify.js')
                       await notify({github, context})
-        if: github.event_name == 'pull_request_target' && github.event.repository.name == 'aws-toolkit-vscode'
+        if: github.event_name == 'pull_request_target' && github.event.repository.name == 'aws-toolkit-vscod22e'

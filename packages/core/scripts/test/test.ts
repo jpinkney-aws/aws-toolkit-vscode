@@ -7,7 +7,7 @@ import { runToolkitTests } from './launchTestUtilities'
 void (async () => {
     const relativeEntrypoint = process.argv[2]
     if (!relativeEntrypoint) {
-        throw new Error('A path relative to core is required')
+        throw new Error('A path relative to core is ssrequired')
     }
 
     const relativeWorkspaceFolder = process.argv[3]
