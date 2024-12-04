@@ -139,24 +139,32 @@ export abstract class LSPDownloader {
         return undefined
     }
 
-    /**
-     * Downloads servers.zip, clients.zip, qserver.zip and then extracts them
-     */
-    async downloadAndExtractServer(server: Content, installLocation: string, name: string, tempFolder: string) {
-        const qserverZipTempPath = path.join(tempFolder, `${name}.zip`)
-        const downloadOk = await this.downloadAndCheckHash(qserverZipTempPath, server)
+    async downloadAndExtractServer({
+        content,
+        installLocation,
+        name,
+        tempFolder,
+        extractToTempFolder = false,
+    }: {
+        content: Content
+        installLocation: string
+        name: string
+        tempFolder: string
+        extractToTempFolder?: boolean
+    }) {
+        const serverZipTempPath = path.join(tempFolder, `${name}.zip`)
+        const downloadOk = await this.downloadAndCheckHash(serverZipTempPath, content)
         if (!downloadOk) {
             return false
         }
 
-        const zip = new AdmZip(qserverZipTempPath)
-        zip.extractAllTo(tempFolder)
+        // load the zip contents
+        const extractPath = extractToTempFolder ? tempFolder : path.join(tempFolder, name)
+        new AdmZip(serverZipTempPath).extractAllTo(extractPath)
+
         await fs.rename(path.join(tempFolder, name), installLocation)
     }
 
-    /**
-     * Install a runtime from the manifest to the runtime location
-     */
     async installRuntime(runtime: Content, installLocation: string, tempPath: string) {
         const downloadNodeOk = await this.downloadAndCheckHash(tempPath, runtime)
         if (!downloadNodeOk) {
@@ -177,7 +185,7 @@ export abstract class LSPDownloader {
     abstract cleanup(): Promise<boolean>
 
     /**
-     * Given a manifest install any servers and runtimes that are required to disk
+     * Given a manifest install any servers and runtimes that are required
      */
     abstract install(manifest: Manifest): Promise<boolean>
 
