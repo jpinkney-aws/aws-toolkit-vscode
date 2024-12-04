@@ -100,6 +100,7 @@ export class AmazonQChatMessageDuration {
                     amazonqEditorReceivedMessageMs: editorReceivedMessage ?? -1,
                     amazonqFeatureReceivedMessageMs: featureReceivedMessage ?? -1,
                     amazonqMessageDisplayedMs: messageDisplayed ?? -1,
+                    toolkitProcessingTimeMs: totalDuration - CWCTelemetryHelper.instance.getServerSideLatency(tabID),
                     source: metrics.trigger,
                     duration: totalDuration,
                     result: 'Succeeded',

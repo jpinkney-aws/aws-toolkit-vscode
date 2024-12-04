@@ -350,6 +350,11 @@
             "name": "amazonqMessageDisplayedMs",
             "type": "int",
             "description": "Duration between the partner teams code receiving the message and when the message was finally displayed in ms"
+        },
+        {
+            "name": "toolkitProcessingTimeMs",
+            "type": "int",
+            "description": "The duration (in milliseconds) taken by the toolkit to process and complete an operation"
         }
     ],
     "metrics": [
@@ -1196,6 +1201,9 @@
                 },
                 {
                     "type": "amazonqMessageDisplayedMs"
+                },
+                {
+                    "type": "toolkitProcessingTimeMs"
                 },
                 {
                     "type": "source"

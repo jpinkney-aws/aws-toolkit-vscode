@@ -455,7 +455,7 @@ export class CWCTelemetryHelper {
             cwsprChatFullResponseLatency: this.responseStreamTotalTime.get(message.tabID) ?? 0,
             cwsprChatTimeToFirstDisplay: this.getFirstDisplayTime(tabID, startTime),
             cwsprChatTimeToFirstUsableChunk: this.getFirstUsableChunkTime(message.tabID) ?? 0,
-            cwsprChatFullServerResponseLatency: this.conversationStreamTotalTime.get(message.tabID) ?? 0,
+            cwsprChatFullServerResponseLatency: this.getServerSideLatency(message.tabID),
             cwsprChatTimeBetweenDisplays: JSON.stringify(this.getTimeBetweenChunks(tabID, this.displayTimeForChunks)),
             cwsprChatFullDisplayLatency: fullDisplayLatency,
             cwsprChatRequestLength: triggerPayload.message?.length ?? 0,
@@ -497,6 +497,13 @@ export class CWCTelemetryHelper {
             .catch(logSendTelemetryEventFailure)
 
         this.messageStorage.delete(tabID)
+    }
+
+    /**
+     * The time between the initial server request, including creating the conversation id, and the final response from the server
+     */
+    public getServerSideLatency(tabID: string) {
+        return this.conversationStreamTotalTime.get(tabID) ?? 0
     }
 
     public recordMessageResponseError(triggerPayload: TriggerPayload, tabID: string, responseCode: number) {
