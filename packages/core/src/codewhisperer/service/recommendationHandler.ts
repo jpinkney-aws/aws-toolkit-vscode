@@ -78,7 +78,7 @@ export class RecommendationHandler {
     private cancellationToken: vscode.CancellationTokenSource
     private _onDidReceiveRecommendation: vscode.EventEmitter<void> = new vscode.EventEmitter<void>()
     public readonly onDidReceiveRecommendation: vscode.Event<void> = this._onDidReceiveRecommendation.event
-    private inlineCompletionProvider?: CWInlineCompletionItemProvider
+    public inlineCompletionProvider?: CWInlineCompletionItemProvider
     private inlineCompletionProviderDisposable?: vscode.Disposable
     private reject: vscode.Disposable
     private next: vscode.Disposable

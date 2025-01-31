@@ -53,3 +53,22 @@ export function stub<T>(ctor: new (...args: any[]) => T, fields?: Fields<T>): St
         },
     }) as Stub<T>
 }
+
+/**
+ * Captures the first undefined value of property on object
+ */
+export function createPersistentStub<T extends object, K extends keyof T>(obj: T, property: K) {
+    let capturedValue: any
+
+    const stub = sinon.stub(obj, property).get(function (this: any) {
+        if (capturedValue === undefined && this[`__${String(property)}`] !== undefined) {
+            capturedValue = this[`__${String(property)}`]
+        }
+        return capturedValue
+    })
+
+    return {
+        stub,
+        value: () => capturedValue,
+    }
+}
