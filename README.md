@@ -58,3 +58,5 @@ We want your feedback!
 ## License
 
 This project and the subprojects within **(AWS Toolkit for Visual Studio Code, Amazon Q for Visual Studio Code)** is distributed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+
