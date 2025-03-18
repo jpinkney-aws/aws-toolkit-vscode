@@ -5,7 +5,7 @@
     "isManifestDeprecated": false,
     "versions": [
         {
-            "serverVersion": "3.1.2",
+            "serverVersion": "3.1.5",
             "isDelisted": false,
             "runtime": {
                 "name": "standalone",
