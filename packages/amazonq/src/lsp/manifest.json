@@ -5,7 +5,7 @@
     "isManifestDeprecated": false,
     "versions": [
         {
-            "serverVersion": "3.1.5",
+            "serverVersion": "3.1.6",
             "isDelisted": false,
             "runtime": {
                 "name": "standalone",
@@ -37,9 +37,9 @@
                             "filename": "servers.zip",
                             "url": "https://github.com/jpinkney-aws/aws-toolkit-vscode/releases/download/v0.0.1/servers.zip",
                             "hashes": [
-                                "sha384:9df056d55316fc5f406f53ce5f93f565471f6620eb390d37a4f8a6d7eefce98b8728f68f55f545d57915a6839d3c4c92"
+                                "sha384:8d0fae837df3bb42f8577c15722885a8207834d37520f043ec270f8158690856ba4198cebffd781429840782a3c6bef6"
                             ],
-                            "bytes": 32157556
+                            "bytes": 32157268
                         },
                         {
                             "filename": "clients.zip",
