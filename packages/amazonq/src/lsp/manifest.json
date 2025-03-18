@@ -1,0 +1,57 @@
+{
+    "manifestSchemaVersion": "0.1",
+    "artifactId": "CodeWhispererStandaloneRuntimeServer",
+    "artifactDescription": "LSP servers with CodeWhisperer on standalone runtime",
+    "isManifestDeprecated": false,
+    "versions": [
+        {
+            "serverVersion": "3.1.2",
+            "isDelisted": false,
+            "runtime": {
+                "name": "standalone",
+                "version": "0.2.37"
+            },
+            "capabilities": [
+                {
+                    "name": "code-whisperer-lsp-server",
+                    "version": "0.0.27"
+                }
+            ],
+            "protocol": [
+                {
+                    "name": "protocol",
+                    "version": "0.2.37"
+                },
+                {
+                    "name": "types",
+                    "version": "0.1.1"
+                }
+            ],
+            "thirdPartyLicenses": "https://aws-language-servers.us-east-1.amazonaws.com/044d86e8-3140-4451-a0cd-dde5d87bb708/THIRD_PARTY_LICENSES",
+            "targets": [
+                {
+                    "platform": "darwin",
+                    "arch": "arm64",
+                    "contents": [
+                        {
+                            "filename": "servers.zip",
+                            "url": "https://github.com/jpinkney-aws/aws-toolkit-vscode/releases/download/v0.0.1/servers.zip",
+                            "hashes": [
+                                "sha384:9df056d55316fc5f406f53ce5f93f565471f6620eb390d37a4f8a6d7eefce98b8728f68f55f545d57915a6839d3c4c92"
+                            ],
+                            "bytes": 32157556
+                        },
+                        {
+                            "filename": "clients.zip",
+                            "url": "https://aws-language-servers.us-east-1.amazonaws.com/044d86e8-3140-4451-a0cd-dde5d87bb708/clients.zip",
+                            "hashes": [
+                                "sha384:3c30b4057a642c1b17810d9d09847bf26b43603aa8975b7194adc3a0bb593e5b6f32dc5d9cc27e481d4a759e73ed9722"
+                            ],
+                            "bytes": 1363394
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
