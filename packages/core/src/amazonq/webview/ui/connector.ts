@@ -261,6 +261,8 @@ export class Connector {
     }
 
     handleMessageReceive = async (message: MessageEvent): Promise<void> => {
+        // eslint-disable-next-line aws-toolkits/no-console-log
+        console.log('received: %O', message)
         if (message.data === undefined) {
             return
         }

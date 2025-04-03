@@ -27,7 +27,7 @@ export class AmazonQLspInstaller extends BaseLspInstaller.BaseLspInstaller<Amazo
             return {
                 lsp: this.config.path ?? '',
                 node: getNodeExecutableName(),
-                mynahUI: '', // TODO make mynah UI configurable
+                mynahUI: '/Users/jpink/workplace/language-servers/chat-client/build/amazonq-ui.js', // TODO make mynah UI configurable
             }
         }
 
@@ -35,7 +35,7 @@ export class AmazonQLspInstaller extends BaseLspInstaller.BaseLspInstaller<Amazo
         return {
             lsp: path.join(assetDirectory, 'servers/aws-lsp-codewhisperer.js'),
             node: nodePath,
-            mynahUI: path.join(assetDirectory, 'clients/amazonq-ui.js'),
+            mynahUI: '/Users/jpink/workplace/language-servers/chat-client/build/amazonq-ui.js',
         }
     }
 }

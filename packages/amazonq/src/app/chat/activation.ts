@@ -4,7 +4,7 @@
  */
 
 import * as vscode from 'vscode'
-import { ExtensionContext, window } from 'vscode'
+import { ExtensionContext } from 'vscode'
 import { telemetry } from 'aws-core-vscode/telemetry'
 import { AuthUtil, CodeWhispererSettings } from 'aws-core-vscode/codewhisperer'
 import { Commands, placeholder, funcUtil } from 'aws-core-vscode/shared'
@@ -17,13 +17,6 @@ export async function activate(context: ExtensionContext) {
 
     registerApps(appInitContext, context)
 
-    const provider = new amazonq.AmazonQChatViewProvider(
-        context,
-        appInitContext.getWebViewToAppsMessagePublishers(),
-        appInitContext.getAppsToWebViewMessageListener(),
-        appInitContext.onDidChangeAmazonQVisibility
-    )
-
     await amazonq.TryChatCodeLensProvider.register(appInitContext.onDidChangeAmazonQVisibility.event)
 
     const setupLsp = funcUtil.debounce(async () => {
@@ -35,11 +28,6 @@ export async function activate(context: ExtensionContext) {
     }, 5000)
 
     context.subscriptions.push(
-        window.registerWebviewViewProvider(amazonq.AmazonQChatViewProvider.viewType, provider, {
-            webviewOptions: {
-                retainContextWhenHidden: true,
-            },
-        }),
         amazonq.focusAmazonQChatWalkthrough.register(),
         amazonq.walkthroughInlineSuggestionsExample.register(),
         amazonq.walkthroughSecurityScanExample.register(),

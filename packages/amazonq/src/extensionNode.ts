@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode'
 import { activateAmazonQCommon, amazonQContextPrefix, deactivateCommon } from './extension'
-import { DefaultAmazonQAppInitContext } from 'aws-core-vscode/amazonq'
+import { DefaultAmazonQAppInitContext, AmazonQChatViewProvider } from 'aws-core-vscode/amazonq'
 import { activate as activateQGumby } from 'aws-core-vscode/amazonqGumby'
 import {
     ExtContext,
@@ -52,6 +52,20 @@ async function activateAmazonQNode(context: vscode.ExtensionContext) {
     }
 
     if (!Experiments.instance.get('amazonqChatLSP', false)) {
+        const appInitContext = DefaultAmazonQAppInitContext.instance
+        const provider = new AmazonQChatViewProvider(
+            context,
+            appInitContext.getWebViewToAppsMessagePublishers(),
+            appInitContext.getAppsToWebViewMessageListener(),
+            appInitContext.onDidChangeAmazonQVisibility
+        )
+        context.subscriptions.push(
+            vscode.window.registerWebviewViewProvider(AmazonQChatViewProvider.viewType, provider, {
+                webviewOptions: {
+                    retainContextWhenHidden: true,
+                },
+            })
+        )
         await activateCWChat(context)
         await activateQGumby(extContext as ExtContext)
     }

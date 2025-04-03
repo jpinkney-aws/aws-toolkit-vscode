@@ -25,6 +25,7 @@ import { window } from 'vscode'
 import { Disposable, LanguageClient, Position, State, TextDocumentIdentifier } from 'vscode-languageclient'
 import * as jose from 'jose'
 import { AmazonQChatViewProvider } from './webviewProvider'
+import { DefaultAmazonQAppInitContext, messageDispatcher } from 'aws-core-vscode/amazonq'
 
 export function registerLanguageServerEventListener(languageClient: LanguageClient, provider: AmazonQChatViewProvider) {
     languageClient.onDidChangeState(({ oldState, newState }) => {
@@ -55,6 +56,15 @@ export function registerMessageListeners(
 ) {
     provider.webview?.onDidReceiveMessage(async (message) => {
         languageClient.info(`[VSCode Client]  Received ${JSON.stringify(message)} from chat`)
+
+        if ((message.tabType && message.tabType !== 'cwc') || messageDispatcher.isLegacyEvent(message.command)) {
+            // handle the mynah ui -> agent legacy flow
+            messageDispatcher.handleWebviewEvent(
+                message,
+                DefaultAmazonQAppInitContext.instance.getWebViewToAppsMessagePublishers()
+            )
+            return
+        }
 
         switch (message.command) {
             case COPY_TO_CLIPBOARD:

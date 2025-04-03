@@ -37,7 +37,7 @@ export class AmazonQChatMessageDuration {
                 trigger,
             })
         }
-        CWCTelemetryHelper.instance.setDisplayTimeForChunks(tabID, startTime)
+        // CWCTelemetryHelper.instance.setDisplayTimeForChunks(tabID, startTime)
     }
 
     /**

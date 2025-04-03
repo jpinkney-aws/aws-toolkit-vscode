@@ -9,8 +9,10 @@ import { AmazonQChatViewProvider } from './webviewProvider'
 import { registerCommands } from './commands'
 import { registerLanguageServerEventListener, registerMessageListeners } from './messages'
 import { globals } from 'aws-core-vscode/shared'
+import { activate as registerLegacyChatListeners } from '../../app/chat/activation'
+import { DefaultAmazonQAppInitContext, messageDispatcher } from 'aws-core-vscode/amazonq'
 
-export function activate(languageClient: LanguageClient, encryptionKey: Buffer, mynahUIPath: string) {
+export async function activate(languageClient: LanguageClient, encryptionKey: Buffer, mynahUIPath: string) {
     const provider = new AmazonQChatViewProvider(mynahUIPath)
 
     globals.context.subscriptions.push(
@@ -29,6 +31,16 @@ export function activate(languageClient: LanguageClient, encryptionKey: Buffer, 
     registerLanguageServerEventListener(languageClient, provider)
 
     provider.onDidResolveWebview(() => {
+        if (provider.webview) {
+            messageDispatcher.dispatchAppsMessagesToWebView(
+                provider.webview,
+                DefaultAmazonQAppInitContext.instance.getAppsToWebViewMessageListener()
+            )
+        }
+
         registerMessageListeners(languageClient, provider, encryptionKey)
     })
+
+    // register event listeners from the legacy agent flow
+    await registerLegacyChatListeners(globals.context)
 }

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import vscode from 'vscode'
 import { ZipMetadata } from '../util/zipUtil'
 import { getLogger } from '../../shared/logger/logger'
 import * as CodeWhispererConstants from '../models/constants'
@@ -30,7 +31,6 @@ import { downloadExportResultArchive } from '../../shared/utilities/download'
 import AdmZip from 'adm-zip'
 import path from 'path'
 import { ExportIntent } from '@amzn/codewhisperer-streaming'
-import { glob } from 'glob'
 import { UserWrittenCodeTracker } from '../tracker/userWrittenCodeTracker'
 import { randomUUID } from '../../shared/crypto'
 import { sleep } from '../../shared/utilities/timeoutUtils'
@@ -278,9 +278,9 @@ export async function exportResultsArchive(
 
 async function getTestFilePathFromZip(pathToArchiveDir: string) {
     const resultArtifactsDir = path.join(pathToArchiveDir, 'resultArtifacts')
-    const paths = await glob([resultArtifactsDir + '/**/*', '!**/.DS_Store'], { nodir: true })
+    const paths = await vscode.workspace.findFiles(resultArtifactsDir + '/**/*', '!**/.DS_Store')
     const absolutePath = paths[0]
-    const result = path.relative(resultArtifactsDir, absolutePath)
+    const result = path.relative(resultArtifactsDir, absolutePath.fsPath)
     return result
 }
 

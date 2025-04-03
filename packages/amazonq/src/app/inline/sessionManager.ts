@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { InlineCompletionItemWithReferences } from '@aws/language-server-runtimes-types/inlineCompletionWithReferences'
+// import { InlineCompletionItemWithReferences } from '@aws/language-server-runtimes-types'
 
 // TODO: add more needed data to the session interface
 interface CodeWhispererSession {
     sessionId: string
-    suggestions: InlineCompletionItemWithReferences[]
+    suggestions: any[]
     // TODO: might need to convert to enum states
     isRequestInProgress: boolean
     requestStartTime: number
@@ -22,7 +22,7 @@ export class SessionManager {
 
     public startSession(
         sessionId: string,
-        suggestions: InlineCompletionItemWithReferences[],
+        suggestions: any[],
         requestStartTime: number,
         firstCompletionDisplayLatency?: number
     ) {
@@ -47,7 +47,7 @@ export class SessionManager {
         return this.activeSession
     }
 
-    public updateSessionSuggestions(suggestions: InlineCompletionItemWithReferences[]) {
+    public updateSessionSuggestions(suggestions: any[]) {
         if (!this.activeSession) {
             return
         }
@@ -70,8 +70,7 @@ export class SessionManager {
         We have to maintain the active suggestion index ourselves because VS Code doesn't expose which suggestion it's currently showing
         In order to keep track of the right suggestion state, and for features such as reference tracker, this hack is still needed
      */
-
-    public getActiveRecommendation(): InlineCompletionItemWithReferences[] {
+    public getActiveRecommendation(): any[] {
         let suggestionCount = this.activeSession?.suggestions.length
         if (!suggestionCount) {
             return []
