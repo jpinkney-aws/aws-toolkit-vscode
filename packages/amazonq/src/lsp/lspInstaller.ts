@@ -37,7 +37,7 @@ export class AmazonQLspInstaller extends BaseLspInstaller.BaseLspInstaller<
         return {
             lsp: path.join(assetDirectory, 'servers/aws-lsp-codewhisperer.js'),
             node: nodePath,
-            ui: path.join(assetDirectory, 'clients/amazonq-ui.js'),
+            ui: this.config.ui ?? path.join(assetDirectory, 'clients/amazonq-ui.js'),
         }
     }
 }
