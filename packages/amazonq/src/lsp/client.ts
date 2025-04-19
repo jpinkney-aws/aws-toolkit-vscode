@@ -9,7 +9,7 @@ import * as crypto from 'crypto'
 import { LanguageClient, LanguageClientOptions } from 'vscode-languageclient'
 import { InlineCompletionManager } from '../app/inline/completion'
 import { AmazonQLspAuth, encryptionKey, notificationTypes } from './auth'
-import { AuthUtil } from 'aws-core-vscode/codewhisperer'
+import { AuthUtil, getSelectedCustomization } from 'aws-core-vscode/codewhisperer'
 import { ConnectionMetadata } from '@aws/language-server-runtimes/protocol'
 import {
     Settings,
@@ -20,6 +20,8 @@ import {
     Commands,
     validateNodeExe,
     getLogger,
+    undefinedIfEmpty,
+    getOptOutPreference,
 } from 'aws-core-vscode/shared'
 import { activate } from './chat/activation'
 import { AmazonQResourcePaths } from './lspInstaller'
@@ -60,25 +62,42 @@ export async function startLanguageServer(
     const clientOptions: LanguageClientOptions = {
         // Register the server for json documents
         documentSelector,
-        // TODO uncomment this when local indexing is in agent chat server manifest and
-        // starting the workspace context doesn't generate known errors: https://github.com/aws/language-servers/pull/982/files
-        // middleware: {
-        //     workspace: {
-        //         configuration: async (params, token, next) => {
-        //             const config = await next(params, token)
-        //             if (params.items[0].section === 'aws.q') {
-        //                 return [
-        //                     {
-        //                         projectContext: {
-        //                             enableLocalIndexing: true,
-        //                         },
-        //                     },
-        //                 ]
-        //             }
-        //             return config
-        //         },
-        //     },
-        // },
+        middleware: {
+            workspace: {
+                /**
+                 * Convert VSCode settings format to be compatible with flare's configs
+                 */
+                configuration: async (params, token, next) => {
+                    const config = await next(params, token)
+                    if (params.items[0].section === 'aws.q') {
+                        const customization = undefinedIfEmpty(getSelectedCustomization().arn)
+                        return [
+                            {
+                                customization,
+                                optOutTelemetryPreference: getOptOutPreference(),
+                                projectContext: {
+                                    // TODO uncomment this when local indexing is in agent chat server manifest
+                                    enableLocalIndexing: false,
+                                },
+                            },
+                        ]
+                    }
+                    if (params.items[0].section === 'aws.codeWhisperer') {
+                        return [
+                            {
+                                includeSuggestionsWithCodeReferences: vscode.workspace
+                                    .getConfiguration()
+                                    .get('amazonQ.showCodeWithReferences'),
+                                shareCodeWhispererContentWithAWS: vscode.workspace
+                                    .getConfiguration()
+                                    .get('amazonQ.shareContentWithAWS'),
+                            },
+                        ]
+                    }
+                    return config
+                },
+            },
+        },
         initializationOptions: {
             aws: {
                 clientInfo: {
